@@ -15,15 +15,17 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @NotEmpty(message = "*Please fill Question A field")
-    private String questionA;
-    @NotEmpty(message = "*Please fill Question B field")
-    private String questionB;
-    @NotEmpty(message = "*Please fill Question C field")
-    private String questionC;
-    @NotEmpty(message = "*Please fill Question D field")
-    private String questionD;
-    @NotEmpty(message = "*Please fill Correct Answer field")
+
+    private String question;
+
+    private String a;
+
+    private String b;
+
+    private String c;
+
+    private String d;
+
     private String correctAnswer;
 
 
@@ -48,43 +50,51 @@ public class Question {
         this.id = id;
     }
 
-    public String getQuestionA() {
-        return questionA;
-    }
-
-    public void setQuestionA(String questionA) {
-        this.questionA = questionA;
-    }
-
-    public String getQuestionB() {
-        return questionB;
-    }
-
-    public void setQuestionB(String questionB) {
-        this.questionB = questionB;
-    }
-
-    public String getQuestionC() {
-        return questionC;
-    }
-
-    public void setQuestionC(String questionC) {
-        this.questionC = questionC;
-    }
-
-    public String getQuestionD() {
-        return questionD;
-    }
-
-    public void setQuestionD(String questionD) {
-        this.questionD = questionD;
-    }
-
     public String getCorrectAnswer() {
         return correctAnswer;
     }
 
     public void setCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public String getA() {
+        return a;
+    }
+
+    public void setA(String a) {
+        this.a = a;
+    }
+
+    public String getB() {
+        return b;
+    }
+
+    public void setB(String b) {
+        this.b = b;
+    }
+
+    public String getC() {
+        return c;
+    }
+
+    public void setC(String c) {
+        this.c = c;
+    }
+
+    public String getD() {
+        return d;
+    }
+
+    public void setD(String d) {
+        this.d = d;
     }
 }

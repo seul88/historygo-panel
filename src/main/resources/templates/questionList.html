@@ -1,10 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Static content -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <script type="text/javascript" src="/resources/js/app.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="/resources/css/style.css">
+
+    <script type="text/javascript" src="/resources/js/app.js"></script>
+
+    <title>HistoryGO</title>
 </head>
-<body>
+
+
+<body style="background-color: aliceblue">
+
+<div class="jumbotron">
+    <div class="row">
+        <button type="button" onclick="location.href = '/admin/menu';" class="btn rounded-circle">
+            <i class="fas fa-arrow-circle-left fa-7x"></i>
+        </button>
+
+        <h1 class="display-1 text-center" style="margin-left:38px;"> Questions </h1>
+    </div>
+</div>
+
+
+
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+
+
+            <div th:if="${not #lists.isEmpty(questions)}">
+
+                <table class="table table-bordered table-striped ">
+
+                    <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>Delete from database</th>
+                    </tr>
+                    </thead>
+
+
+
+
+
+                    <tbody th:each="question: ${questions}" th:remove="tag">
+
+
+                    <tr>
+                        <td style="background-color:#99ddff" > <b>
+
+                            <span  th:text="${question.question}" /> </b> </td>
+
+                        <td th:style="${question.correctAnswer == 'a'} ? 'background-color:#ccffcc'  ">
+                            <span th:text="${question.a}" />
+                        </td>
+
+                        <td th:style="${question.correctAnswer == 'b'} ? 'background-color:#ccffcc'  ">
+                            <span th:text="${question.b}" />
+                        </td>
+
+                        <td th:style="${question.correctAnswer == 'c'} ? 'background-color:#ccffcc'  ">
+                            <span th:text="${question.c}" />
+                        </td>
+
+                        <td th:style="${question.correctAnswer == 'd'} ? 'background-color:#ccffcc'  ">
+                            <span th:text="${question.d}" />
+                        </td>
+
+
+
+                        <td>
+                            <form action="/admin/deleteQuestion" method="post">
+                                <input type = "hidden" name="id" th:value="${question.id}"> <input type="submit" class="btn btn-danger m-1 pl-5 pr-5" value="DELETE">
+                            </form>
+                        </td>
+                    </tr>
+
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+
+</div>
+
+
 
 </body>
 </html>

@@ -88,6 +88,15 @@ public class UserController {
 	}
 
 
+	@GetMapping("/name/{name}/points/{points}")
+	public void addPointsForQuiz(@PathVariable("name") String name, @PathVariable("points") int points){
+		User temp = userRepository.findByName(name);
+		int userPoints = temp.getPoints();
+		userPoints  += points;
+		temp.setPoints(userPoints);
+		this.userRepository.save(temp);
+	}
+
 	@GetMapping("/points/{points}")
 	public List<User> getByPoints(@PathVariable("points") int points){
 

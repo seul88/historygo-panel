@@ -16,6 +16,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -31,19 +33,14 @@ public class User {
 	private int id;
 
 	@Column(name = "email")
-	@Email(message = "*Please provide a valid Email")
-	@NotEmpty(message = "*Please provide an email")
 	private String email;
 
-	@JsonIgnore
 	@Column(name = "password")
 	@Length(min = 5, message = "*Your password must have at least 5 characters")
-	@NotEmpty(message = "*Please provide your password")
-	@Transient
+	//@Transient
 	private String password;
 
 	@Column(name = "name")
-	@NotEmpty(message = "*Please provide your name")
 	private String name;
 
 
@@ -56,7 +53,6 @@ public class User {
 	private int points = 0;
 
 	@Column(name = "country")
-//	@NotEmpty(message = "*Please provide your country")
 	private String country = "Poland";
 
 	public int getPoints() {
@@ -67,9 +63,9 @@ public class User {
 		this.points = points;
 	}
 
-public String getCountry() {
-		return country;
-	}
+	public String getCountry() {
+			return country;
+		}
 
 	public void setCountry(String country) {
 		this.country = country;
@@ -122,10 +118,12 @@ public String getCountry() {
 		this.id = id;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
 
+	@JsonProperty
 	public void setPassword(String password) {
 		this.password = password;
 	}

@@ -39,10 +39,18 @@ public class UserController {
 	public void addUser(@RequestBody User user){
 
 		User temp = new User();
+		
 		temp.setName(user.getName());
 		temp.setEmail(user.getEmail());
+		temp.setCountry(user.getCountry());
+		// do zmiany :)
+		temp.setPassword(user.getPassword());
 
-
+		System.out.println(user.getCountry());
+		System.out.println(user.getPassword());
+		System.out.println(user.getEmail());
+		System.out.println(user.getId());
+		System.out.println(user.getName());
 		this.userRepository.save(temp);
 
 	}
@@ -55,6 +63,7 @@ public class UserController {
 
 		ArrayList<User> users = new ArrayList<>();
 		users = (ArrayList<User>) userRepository.findAll();
+		/*
 		ArrayList<User> players = new ArrayList<>();
 
 		for (User user : users){
@@ -66,7 +75,10 @@ public class UserController {
 				}
 			}
 		}
+		
 		return players;
+		*/
+		return users;
 	}
 
 

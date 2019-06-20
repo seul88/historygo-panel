@@ -36,6 +36,7 @@ public class PlaceController {
     @PostMapping("/add")
     public String addPlace(@RequestBody Places place) {
 
+    	System.out.println(place.getDescription());
         Places temp = new Places();
 
         temp.setName(place.getName());

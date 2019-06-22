@@ -4,6 +4,11 @@ package com.historygo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Immutable;
+import org.hibernate.validator.constraints.UniqueElements;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -13,16 +18,32 @@ import java.util.Set;
 public class Places {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique=true)
     private Integer id;
+    
+    @Column(unique=true)
     private String name;
+    
     @Column(length = 65535,columnDefinition="Text")
     private String description;
+    
+    @Column
     private int points;
+    
+    @Column
     private double rating;
+    
+    @Column
     private int year;
+    
+    @Column
     private int visits;
+    
+    @Column
     private double GPS_N;
+    
+    @Column
     private double GPS_E;
 
 

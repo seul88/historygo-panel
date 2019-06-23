@@ -23,6 +23,7 @@ import javax.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping(path="/questions")
+@CrossOrigin(origins = "http://localhost:4200")
 public class QuestionController {
 
 
@@ -32,7 +33,6 @@ public class QuestionController {
 
     @PostMapping()
     public ResponseEntity<Object> addQuestion(@RequestBody Question question) {
-    	System.out.println(question.getQuestion());
     	try {
     		 Question q = this.questionRepository.save(question);
              URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/id/{id}").buildAndExpand(q.getId()).toUri();
@@ -127,10 +127,7 @@ public class QuestionController {
     
     @GetMapping(path = "/all")
     public ResponseEntity<Object> getAllQuestions() {
-
-         List<Question> allQuestions = questionRepository.findAll();
-         if (allQuestions.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-         return new ResponseEntity<>(allQuestions, HttpStatus.OK);
+         return new ResponseEntity<>(questionRepository.findAll(), HttpStatus.OK);
     }
 
 }

@@ -2,201 +2,210 @@ package com.historygo.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.historygo.model.Question;
 import com.historygo.model.Role;
 import com.historygo.model.User;
 import com.historygo.repository.UserRepository;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @RestController
 @RequestMapping(path="/users")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
 	@Autowired
 	@Qualifier("userRepository")
 	private UserRepository userRepository;
 
-	/*
-	@GetMapping(path="/add")
-	public @ResponseBody
-    String addNewUser (@RequestParam String name, @RequestParam int points) {
 
-		User n = new User();
-		n.setName(name);
-		n.setPoints(points);
 
-		userRepository.save(n);
-		return "Saved";
-	}
-*/
-
-	@PostMapping("/add")
-	public void addUser(@RequestBody User user){
-
-		User temp = new User();
-		
-		temp.setName(user.getName());
-		temp.setEmail(user.getEmail());
-		temp.setCountry(user.getCountry());
-		// do zmiany :)
-		temp.setPassword(user.getPassword());
-
-		System.out.println(user.getCountry());
-		System.out.println(user.getPassword());
-		System.out.println(user.getEmail());
-		System.out.println(user.getId());
-		System.out.println(user.getName());
-		this.userRepository.save(temp);
-
+	@PostMapping()
+	  public ResponseEntity<Object> addUser(@RequestBody User user){
+		try {
+			// Ustawienie szyfrowania hasła BCryptem
+			User newUser = this.userRepository.save(user);
+			
+		    URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/id/{id}").buildAndExpand(newUser.getId()).toUri();
+			return new ResponseEntity<>(uri, HttpStatus.CREATED);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	
+	
 	@GetMapping(path="/all")
-	public @ResponseBody
-    Iterable<User> getAllUsers() {
+	public ResponseEntity<Object> getAllUsers() {
 
-
-		ArrayList<User> users = new ArrayList<>();
-		users = (ArrayList<User>) userRepository.findAll();
-		/*
-		ArrayList<User> players = new ArrayList<>();
-
-		for (User user : users){
-			for (Role role : user.getRoles()){
-				if (role.getRole().equals("ADMIN")){
-				}
-				if (role.getRole().equals("USER")) {
-					players.add(user);
-				}
-			}
+		try {
+			return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
-		return players;
-		*/
-		return users;
 	}
 
 
+	
 	@GetMapping("/id/{id}")
-	public User getById(@PathVariable("id") int id){
-		User user = this.userRepository.findById(id);
-
-		return user;
+	public ResponseEntity<Object> getUserById(@PathVariable("id") int id){
+		try {
+			User result = this.userRepository.findById(id);
+			if (result.equals(null)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 
-
+	// delete user, update user
 
 
 	@GetMapping("/name/{name}")
-	public User getByName(@PathVariable("name") String name){
-		User user = this.userRepository.findByName(name);
+	public ResponseEntity<Object> getUserByName(@PathVariable("name") String name){
+		try {
+		User result = this.userRepository.findByName(name);
+		if (result.equals(null)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(result, HttpStatus.OK);
+		}
 
-		return user;
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 
 	}
 
 
+	
 	@GetMapping("/name/{name}/points/{points}")
-	public void addPointsForQuiz(@PathVariable("name") String name, @PathVariable("points") int points){
-		User temp = userRepository.findByName(name);
-		int userPoints = temp.getPoints();
-		userPoints  += points;
-		temp.setPoints(userPoints);
-		this.userRepository.save(temp);
+	public ResponseEntity<Object> addPointsForQuiz(@PathVariable("name") String name, @PathVariable("points") int points){
+		try {
+			User toPromote = userRepository.findByName(name);
+			if (toPromote.equals(null)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			int userPoints = toPromote.getPoints();
+			userPoints  += points;
+			toPromote.setPoints(userPoints);
+			this.userRepository.save(toPromote);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
+	
+	
 	@GetMapping("/points/{points}")
-	public List<User> getByPoints(@PathVariable("points") int points){
-
-		List<User> users = this.userRepository.findByPointsGreaterThanEqual(points);
-
-		return users;
+	public ResponseEntity<Object> getUserByPoints(@PathVariable("points") int points){
+		try {
+			return new ResponseEntity<>(this.userRepository.findByPointsGreaterThanEqual(points), HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 
 
+	
 	@GetMapping("/country/{country}")
-	public List<User> listByCountry(@PathVariable("country") String country){
-
-		List<User> users = this.userRepository.findByCountry(country);
-
-		return users;
-
+	public ResponseEntity<Object> listByCountry(@PathVariable("country") String country){
+		try {
+			return new ResponseEntity<>(this.userRepository.findByCountry(country), HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 
 
 	@PostMapping("/email")
-	public User findByEmail(@RequestParam("email") String email) {
-		User user = this.userRepository.findByEmail(email);
-
-		return user;
+	public ResponseEntity<Object> findUserByEmail(@RequestParam("email") String email) {
+		try {
+			User result = this.userRepository.findByEmail(email);
+			if (result.equals(null)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 
+	
 	@GetMapping("/email/{email:.+}")
-	public User getByEmail(@PathVariable("email") String email){
-
-		User user = this.userRepository.findByEmail(email);
-
-		return user;
-
+	public ResponseEntity<Object> getByEmail(@PathVariable("email") String email){
+		try {
+			User result = this.userRepository.findByEmail(email);
+			if (result.equals(null)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
-
-	@PutMapping("/name/{name}")
-	public void setUserName(@PathVariable("name") String name, @RequestBody String nick){
-		User user = this.userRepository.findByName(name);
-		user.setName(nick);
-		this.userRepository.save(user);
-	}
-
-	@PutMapping("/id/{id}")
-	public void setUserNameById(@PathVariable("id") int id, @RequestBody String name){
-		User user = this.userRepository.findById(id);
-		user.setName(name);
-		this.userRepository.save(user);
-	}
-
+	
 
 	@GetMapping("/user/{user}/password/{password:.+}")
-	public String loginByName(@PathVariable("user") String user, @PathVariable("password") String password ){
-		User temp = this.userRepository.findByName(user);
-		String response;
-
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String dbPassword = temp.getPassword();
-
-		if (passwordEncoder.matches(password, dbPassword)) {
-			response = "VERIFIED";
-		} else {
-			response = "DENIED";
+	public ResponseEntity<Object> loginByName(@PathVariable("user") String user, @PathVariable("password") String password ){
+		try {
+			String response;
+			User temp = this.userRepository.findByName(user);
+			if (temp.equals(null)) return new ResponseEntity<>("DENIED", HttpStatus.NOT_FOUND);
+				
+			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+			String dbPassword = temp.getPassword();
+	
+			if (passwordEncoder.matches(password, dbPassword)) {
+				response = "VERIFIED";
+			} else {
+				response = "DENIED";
+			}
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
-
-		return response;
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>("DENIED", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 
 
 	@GetMapping("/email/{email}/password/{password:.+}")
-	public String loginByEmail(@PathVariable("email") String email, @PathVariable("password") String password ){
-		User temp = this.userRepository.findByEmail(email);
-		String response;
-
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String dbPassword = temp.getPassword();
-
-		if (passwordEncoder.matches(password, dbPassword)) {
-			response = "VERIFIED";
-		} else {
-			response = "DENIED";
+	public ResponseEntity<Object> loginByEmail(@PathVariable("email") String email, @PathVariable("password") String password ){
+		try {
+			User temp = this.userRepository.findByEmail(email);
+			String response;
+	
+			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+			String dbPassword = temp.getPassword();
+	
+			if (passwordEncoder.matches(password, dbPassword)) {
+				response = "VERIFIED";
+			} else {
+				response = "DENIED";
+			}
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
-
-		return response;
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
-
 }

@@ -19,32 +19,32 @@ public class Places {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique=true)
+    @Column(unique=true, nullable = false)
     private Integer id;
     
-    @Column(unique=true)
+    @Column(unique=true, nullable = false)
     private String name;
     
-    @Column(length = 65535,columnDefinition="Text")
+    @Column(length = 65535, columnDefinition="Text")
     private String description;
     
-    @Column
+    @Column(nullable = false)
     private int points;
     
-    @Column
+    @Column(nullable = false, columnDefinition="int default 0")
     private double rating;
     
-    @Column
+    @Column(nullable = false)
     private int year;
     
-    @Column
+    @Column(nullable = false, columnDefinition="int default 0")
     private int visits;
     
-    @Column
-    private double GPS_N;
+    @Column(nullable = false)
+    private double latitude;
     
-    @Column
-    private double GPS_E;
+    @Column(nullable = false)
+    private double longitude;
 
 
     @ManyToMany
@@ -157,19 +157,19 @@ public class Places {
         this.visits = visits;
     }
 
-    public double getGPS_N() {
-        return GPS_N;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setGPS_N(double GPS_N) {
-        this.GPS_N = GPS_N;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public double getGPS_E() {
-        return GPS_E;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setGPS_E(double GPS_W) {
-        this.GPS_E = GPS_W;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

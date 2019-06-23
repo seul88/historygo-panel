@@ -13,18 +13,25 @@ public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(unique=true, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private String question;
 
+    @Column(nullable = false)
     private String a;
 
+    @Column(nullable = false)
     private String b;
 
+    @Column(nullable = false)
     private String c;
 
+    @Column(nullable = false)
     private String d;
 
+    @Column(nullable = false)
     private String correctAnswer;
 
 

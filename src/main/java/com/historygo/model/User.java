@@ -32,7 +32,7 @@ public class User {
 	@Column(name = "user_id")
 	private int id;
 
-	@Column(name = "email")
+	@Column(unique=true, name = "email")
 	private String email;
 
 	@Column(name = "password")
@@ -40,7 +40,7 @@ public class User {
 	//@Transient
 	private String password;
 
-	@Column(name = "name")
+	@Column(unique=true, name = "name")
 	private String name;
 
 

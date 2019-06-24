@@ -81,8 +81,8 @@ public class QuestionController {
     public ResponseEntity<Object> updateQuestion(@RequestBody Question question){
     	
     	try {
-    		Question questionToUpdate = this.questionRepository.getOne(question.getId());
-    		question.setId(questionToUpdate.getId());
+    		//Question questionToUpdate = this.questionRepository.getOne(question.getId());
+    		//question.setId(questionToUpdate.getId());
     		this.questionRepository.save(question);
     		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/id/{id}").buildAndExpand(question.getId()).toUri();
     		return new ResponseEntity<>(uri, HttpStatus.OK);

@@ -29,14 +29,17 @@ public class UserController {
 	@Qualifier("userRepository")
 	private UserRepository userRepository;
 
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
 
-
+	
+	
 	@PostMapping()
 	  public ResponseEntity<Object> addUser(@RequestBody User user){
 		try {
-			// Ustawienie szyfrowania hasła BCryptem
+			String dbPassword = user.getPassword();
+			user.setPassword(this.passwordEncoder.encode(dbPassword));
 			User newUser = this.userRepository.save(user);
-			
 		    URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/id/{id}").buildAndExpand(newUser.getId()).toUri();
 			return new ResponseEntity<>(uri, HttpStatus.CREATED);
 		}
@@ -49,19 +52,17 @@ public class UserController {
 	
 	@GetMapping(path="/all")
 	public ResponseEntity<Object> getAllUsers() {
-
 		try {
 			return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
 		}
 		catch(DataAccessException dataAccessException) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		
 	}
 
 
 	
-	@GetMapping("/id/{id}")
+	@GetMapping(path="/id/{id}")
 	public ResponseEntity<Object> getUserById(@PathVariable("id") int id){
 		try {
 			User result = this.userRepository.findById(id);
@@ -70,21 +71,47 @@ public class UserController {
 		}
 		catch(DataAccessException dataAccessException) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		
+		}		
 	}
 
-	// delete user, update user
+	
+	
+	@DeleteMapping(path="/id/{id}")
+	public ResponseEntity<Object> deleteUserById(@PathVariable("id") int id){
+		try {
+			User toDelete = this.userRepository.findById(id);
+			toDelete.setPlaces(null);
+			this.userRepository.delete(toDelete);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	
+	@PutMapping
+	public ResponseEntity<Object> updateUserDetails(@RequestBody User user){
+		try {
+			this.userRepository.save(user);
+    		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/id/{id}").buildAndExpand(user.getId()).toUri();
+			return new ResponseEntity<>(uri, HttpStatus.OK);
+		}
+		catch(DataAccessException dataAccessException) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}		
+	}
 
+	
 
 	@GetMapping("/name/{name}")
 	public ResponseEntity<Object> getUserByName(@PathVariable("name") String name){
 		try {
-		User result = this.userRepository.findByName(name);
-		if (result.equals(null)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(result, HttpStatus.OK);
+			User result = this.userRepository.findByName(name);
+			if (result.equals(null)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(result, HttpStatus.OK);
 		}
-
 		catch(DataAccessException dataAccessException) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
@@ -171,10 +198,9 @@ public class UserController {
 			User temp = this.userRepository.findByName(user);
 			if (temp.equals(null)) return new ResponseEntity<>("DENIED", HttpStatus.NOT_FOUND);
 				
-			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			String dbPassword = temp.getPassword();
 	
-			if (passwordEncoder.matches(password, dbPassword)) {
+			if (this.passwordEncoder.matches(password, dbPassword)) {
 				response = "VERIFIED";
 			} else {
 				response = "DENIED";
@@ -194,10 +220,9 @@ public class UserController {
 			User temp = this.userRepository.findByEmail(email);
 			String response;
 	
-			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			String dbPassword = temp.getPassword();
 	
-			if (passwordEncoder.matches(password, dbPassword)) {
+			if (this.passwordEncoder.matches(password, dbPassword)) {
 				response = "VERIFIED";
 			} else {
 				response = "DENIED";

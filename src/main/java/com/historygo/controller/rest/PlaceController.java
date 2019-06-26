@@ -2,7 +2,9 @@ package com.historygo.controller.rest;
 
 
 import com.historygo.model.Places;
+import com.historygo.model.User;
 import com.historygo.repository.PlaceRepository;
+import com.historygo.repository.UserRepository;
 
 import java.net.URI;
 import java.util.List;
@@ -26,7 +28,8 @@ public class PlaceController {
 	@Autowired
     private PlaceRepository placeRepository;
 
-    
+	@Autowired
+	private UserRepository userRepository;
 	
     @PostMapping()
     public ResponseEntity<Object> addPlace(@RequestBody Places place) {
@@ -67,17 +70,24 @@ public class PlaceController {
     
     
     @DeleteMapping(path="/id/{id}")
-    public ResponseEntity<String> deletePlaceById(@PathVariable("id") int id) {
+    public ResponseEntity<Object> deletePlaceById(@PathVariable("id") int id) {
     
     	 try {
     		 Places placeToRemove = placeRepository.getOne(id);
+    		 List<User> allUsers = userRepository.findAll();
+    		 for(User user : allUsers) {
+    			 if (user.getPlaces().contains(placeToRemove))
+    				 user.removePlace(placeToRemove);
+    		 }
     		 placeRepository.delete(placeToRemove);
-			 return new ResponseEntity<String>("Place succesfully removed.", HttpStatus.OK);
+    		 
+			 return new ResponseEntity<>(HttpStatus.OK);
     	 }
     	 catch(DataAccessException dataAccessException) {
     		 System.err.println("Data access layer error occured during deleting the place.");
-             return new ResponseEntity<String>("Data access layer error occured during deleting the place.", HttpStatus.BAD_REQUEST);
+             return new ResponseEntity<>("Data access layer error occured during deleting the place.", HttpStatus.BAD_REQUEST);
     	 }
+    	 
     }
     
     

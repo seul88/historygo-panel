@@ -13,10 +13,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -31,13 +33,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private String rolesQuery;
 
 	
+	
+	
 	  @Override
 	    protected void configure(HttpSecurity httpSecurity) throws Exception {
 	       // httpSecurity.authorizeRequests().antMatchers("/").permitAll()
 		  httpSecurity.cors().and().csrf().disable();
 	}
 	
-	 
+	  @Override
+	    public void addCorsMappings(CorsRegistry registry) {
+	        registry.addMapping("/**")
+	                .allowedMethods("*");
+	    }
 	  
 	/*
 	@Override

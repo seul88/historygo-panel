@@ -84,8 +84,7 @@ public class QuestionController {
     		//Question questionToUpdate = this.questionRepository.getOne(question.getId());
     		//question.setId(questionToUpdate.getId());
     		this.questionRepository.save(question);
-    		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/id/{id}").buildAndExpand(question.getId()).toUri();
-    		return new ResponseEntity<>(uri, HttpStatus.OK);
+    		return new ResponseEntity<>(HttpStatus.OK);
     	}
 	 catch(DataAccessException dataAccessException) {
 		 System.err.println("Data access layer error occured during updating of question.");

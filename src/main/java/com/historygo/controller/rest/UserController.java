@@ -10,9 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.historygo.model.Places;
 import com.historygo.model.Question;
 import com.historygo.model.Role;
 import com.historygo.model.User;
+import com.historygo.repository.PlaceRepository;
 import com.historygo.repository.UserRepository;
 
 import java.net.URI;
@@ -29,6 +31,9 @@ public class UserController {
 	@Qualifier("userRepository")
 	private UserRepository userRepository;
 
+	@Autowired
+	private PlaceRepository placeRepository;
+	
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
 
@@ -80,7 +85,11 @@ public class UserController {
 	public ResponseEntity<Object> deleteUserById(@PathVariable("id") int id){
 		try {
 			User toDelete = this.userRepository.findById(id);
-			toDelete.setPlaces(null);
+			List<Places> allPlaces = placeRepository.findAll();
+			for (Places place : allPlaces) {
+				if (place.getUsers().contains(toDelete))
+					place.removeUser(toDelete);
+			}
 			this.userRepository.delete(toDelete);
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
